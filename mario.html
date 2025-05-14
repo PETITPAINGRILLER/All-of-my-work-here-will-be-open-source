@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mini Mario Runner</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: sans-serif;
+      background-color: #5c94fc;
+    }
+    #game {
+      width: 100%;
+      height: 300px;
+      background: linear-gradient(#5c94fc 70%, #3cc84a 70%);
+      position: relative;
+    }
+    #mario {
+      width: 50px;
+      height: 50px;
+      background: url('https://i.imgur.com/OdL0XPt.png') no-repeat center;
+      background-size: contain;
+      position: absolute;
+      bottom: 50px;
+      left: 50px;
+    }
+    #goomba {
+      width: 40px;
+      height: 40px;
+      background: url('https://i.imgur.com/QZgI2Oe.png') no-repeat center;
+      background-size: contain;
+      position: absolute;
+      bottom: 50px;
+      right: 0;
+      animation: goombaMove 3s linear infinite;
+    }
+    @keyframes jump {
+      0%   { bottom: 50px; }
+      50%  { bottom: 150px; }
+      100% { bottom: 50px; }
+    }
+    @keyframes goombaMove {
+      from { right: -40px; }
+      to   { right: 100%; }
+    }
+    #gameOver {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 32px;
+      color: red;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="game">
+    <div id="mario"></div>
+    <div id="goomba"></div>
+    <div id="gameOver">Game Over 😵</div>
+  </div>
+
+  <script>
+    const mario = document.getElementById('mario');
+    const goomba = document.getElementById('goomba');
+    const gameOver = document.getElementById('gameOver');
+
+    let isJumping = false;
+
+    document.addEventListener('keydown', function(event) {
+      if (event.code === 'Space' && !isJumping) {
+        jump();
+      }
+    });
+
+    function jump() {
+      isJumping = true;
+      mario.style.animation = 'jump 0.5s ease';
+      setTimeout(() => {
+        mario.style.animation = '';
+        isJumping = false;
+      }, 500);
+    }
+
+    setInterval(() => {
+      const marioRect = mario.getBoundingClientRect();
+      const goombaRect = goomba.getBoundingClientRect();
+
+      if (
+        marioRect.right > goombaRect.left &&
+        marioRect.left < goombaRect.right &&
+        marioRect.bottom > goombaRect.top
+      ) {
+        gameOver.style.display = 'block';
+        goomba.style.animationPlayState = 'paused';
+        document.removeEventListener('keydown', jump);
+      }
+    }, 10);
+  </script>
+</body>
+</html>
